@@ -1,31 +1,67 @@
-MODULE user(semaphore)
+MODULE user(semaphore, active)
 VAR
   state : { idle, entering, critical, exiting };
 ASSIGN
   init(state) := idle;
   next(state) := case
-    state = idle : { idle, entering };
-    state = entering & !semaphore : critical;
-    state = critical : { critical, exiting };
-    state = exiting : idle;
+    state = idle & active : { idle, entering };
+    state = entering & active & !semaphore : critical;
+    state = critical & active : { critical, exiting };
+    state = exiting & active: idle;
     TRUE : state;
   esac;
-  next(semaphore) := case
-    state = entering: TRUE;
-    state = exiting : FALSE;
-    TRUE : semaphore;
-  esac;
-FAIRNESS
-  running
+
+-- FAIRNESS state = exiting;
 
 MODULE main
 VAR
+  running : 0..1;
   semaphore : boolean;
-  proc1 : process user(semaphore);
-  proc2 : process user(semaphore);
+  proc1 : user(semaphore,next(running) = 0);
+  proc2 : user(semaphore,next(running) = 1);
+
 ASSIGN
   init(semaphore) := FALSE;
+  next(semaphore) := case
+    proc1.state = entering & proc1.active : TRUE;
+    proc1.state = exiting & proc1.active : FALSE;
+    proc2.state = entering & proc2.active : TRUE;
+    proc2.state = exiting & proc2.active : FALSE;
+    TRUE : semaphore;
+  esac;
+
+FAIRNESS running = 0;
+FAIRNESS running = 1;
+
+
 
 SPEC AG !(proc1.state = critical & proc2.state = critical); -- safety
 
 SPEC AG (proc1.state = entering -> AF proc1.state = critical); -- liveness
+
+  -- When fairness is not active in the user module.
+  -- This is because the processes don't release the semaphore when in the critical state.
+  -- -> State: 1.1 <-
+  --   running = 0
+  --   semaphore = FALSE
+  --   proc1.state = idle
+  --   proc2.state = idle
+  -- -> State: 1.2 <-
+  --   proc1.state = entering
+  -- -> State: 1.3 <-
+  --   running = 1
+  -- -> State: 1.4 <-
+  --   proc2.state = entering
+  -- -- Loop starts here
+  -- -> State: 1.5 <-
+  --   semaphore = TRUE
+  --   proc2.state = critical
+  -- -> State: 1.6 <-
+  --   running = 0
+  -- -- Loop starts here
+  -- -> State: 1.7 <-
+  --   running = 1
+  -- -> State: 1.8 <-
+  --   running = 0
+  -- -> State: 1.9 <-
+  --   running = 1

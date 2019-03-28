@@ -14,28 +14,91 @@ ASSIGN
   init (time) := 0;
 
   next (torch) := case
-    -- rule: torch can only move if carried
+    count(traveling[0] & location[0] = torch,traveling[1] & location[1] = torch ,traveling[2] & location[2] = torch,traveling[3]&location[3] = torch) > 0 : !torch;
+    TRUE: torch;
   esac;
 
   next (location[0]) := case
-    -- rule: location changes if "0" is traveling
+    location[0] = torch & traveling[0] : !location[0];
+    TRUE: location[0];
   esac;
 
   next (location[1]) := case
-    -- copy rule from above and change index
+    location[1] = torch & traveling[1] : !location[1];
+    TRUE: location[1];
   esac;
 
   next (location[2]) := case
+    location[2] = torch & traveling[2] : !location[2];
+    TRUE: location[2];
   esac;
 
   next (location[3]) := case
+    location[3] = torch & traveling[3] : !location[3];
+    TRUE: location[3];
   esac;
 
   next(time) := case
     time > 90: 90;
+    traveling[3]: time + 10;
+    traveling[2]: time + 5;
+    traveling[1]: time + 2;
+    traveling[0]: time + 1;
+    TRUE: time;
   esac;
 
 LTLSPEC
-  !( (-- rule for valid transitions --))
-     U (-- all travelers must reach goal -- &
-        time <= --MIN--));
+  !( (count(traveling[0],traveling[1],traveling[2],traveling[3])<3)
+     U (location[0] & location[1] & location[2] & location[3] &
+        time <= 17));
+
+--         -> State: 1.1 <-
+--   location[0] = FALSE
+--   location[1] = FALSE
+--   location[2] = FALSE
+--   location[3] = FALSE
+--   traveling[0] = TRUE
+--   traveling[1] = TRUE
+--   traveling[2] = FALSE
+--   traveling[3] = FALSE
+--   torch = FALSE
+--   time = 0
+-- -> State: 1.2 <- person A and B goes over
+--   location[0] = TRUE
+--   location[1] = TRUE
+--   traveling[0] = FALSE
+--   torch = TRUE
+--   time = 2
+-- -> State: 1.3 <- person B goes back
+--   location[1] = FALSE
+--   traveling[1] = FALSE
+--   traveling[2] = TRUE
+--   traveling[3] = TRUE
+--   torch = FALSE
+--   time = 4
+-- -> State: 1.4 <- person C and D goes over
+--   location[2] = TRUE
+--   location[3] = TRUE
+--   traveling[0] = TRUE
+--   traveling[2] = FALSE
+--   traveling[3] = FALSE
+--   torch = TRUE
+--   time = 14
+-- -> State: 1.5 <- person A goes back
+--   location[0] = FALSE
+--   traveling[1] = TRUE
+--   torch = FALSE
+--   time = 15
+-- -> State: 1.6 <- person A and B goes over.
+--   location[0] = TRUE
+--   location[1] = TRUE
+--   traveling[1] = FALSE
+--   torch = TRUE
+--   time = 17
+-- -- Loop starts here
+-- -> State: 1.7 <-
+--   location[0] = FALSE
+--   traveling[0] = FALSE
+--   torch = FALSE
+--   time = 18
+-- -> State: 1.8 <-
