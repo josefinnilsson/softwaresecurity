@@ -1,11 +1,12 @@
 MODULE main
 VAR
-  location : array 0..3 of boolean;
-  traveling: array 0..3 of boolean;
-  torch: boolean;
-  time: 0..100;
+  location : array 0..3 of boolean; -- ### locations of each person
+  traveling: array 0..3 of boolean; -- ### is each person traveling or not
+  torch: boolean; -- ### location of the torch
+  time: 0..100; -- ### time
 
 ASSIGN
+  -- ### initially all persons and torch are on one side, time is zero
   init (location[0]) := FALSE;
   init (location[1]) := FALSE;
   init (location[2]) := FALSE;
@@ -14,31 +15,40 @@ ASSIGN
   init (time) := 0;
 
   next (torch) := case
-    count(traveling[0] & location[0] = torch,traveling[1] & location[1] = torch ,traveling[2] & location[2] = torch,traveling[3]&location[3] = torch) > 0 : !torch;
-    TRUE: torch;
+    -- rule: torch can only move if carried
+    -- ### eg. its on same side with someone who is moving, then the torch's position is toggled
+    location[0] = torch & traveling[0]: !torch;
+    location[1] = torch & traveling[1]: !torch;
+    location[2] = torch & traveling[2]: !torch;
+    location[3] = torch & traveling[3]: !torch;
+    TRUE: torch; -- ### otherwise torch stays in place at one side
   esac;
 
   next (location[0]) := case
-    location[0] = torch & traveling[0] : !location[0];
+    -- rule: location changes if "0" is traveling
+    -- ### eg. its on same side with someone who is moving, then the torch's position is toggled
+    traveling[0] & location[0] = torch: !location[0];
     TRUE: location[0];
   esac;
 
   next (location[1]) := case
-    location[1] = torch & traveling[1] : !location[1];
+    -- copy rule from above and change index
+    traveling[1] & location[1] = torch: !location[1];
     TRUE: location[1];
   esac;
 
   next (location[2]) := case
-    location[2] = torch & traveling[2] : !location[2];
+    traveling[2] & location[2] = torch: !location[2];
     TRUE: location[2];
   esac;
 
   next (location[3]) := case
-    location[3] = torch & traveling[3] : !location[3];
+    traveling[3] & location[3] = torch: !location[3];
     TRUE: location[3];
   esac;
 
   next(time) := case
+    -- ### update time up until 90 with the values specific to the slowest moving person
     time > 90: 90;
     traveling[3]: time + 10;
     traveling[2]: time + 5;
@@ -47,58 +57,63 @@ ASSIGN
     TRUE: time;
   esac;
 
-LTLSPEC
-  !( (count(traveling[0],traveling[1],traveling[2],traveling[3])<3)
-     U (location[0] & location[1] & location[2] & location[3] &
-        time <= 17));
 
---         -> State: 1.1 <-
---   location[0] = FALSE
---   location[1] = FALSE
---   location[2] = FALSE
---   location[3] = FALSE
---   traveling[0] = TRUE
---   traveling[1] = TRUE
---   traveling[2] = FALSE
---   traveling[3] = FALSE
---   torch = FALSE
---   time = 0
--- -> State: 1.2 <- person A and B goes over
---   location[0] = TRUE
---   location[1] = TRUE
---   traveling[0] = FALSE
---   torch = TRUE
---   time = 2
--- -> State: 1.3 <- person B goes back
---   location[1] = FALSE
---   traveling[1] = FALSE
---   traveling[2] = TRUE
---   traveling[3] = TRUE
---   torch = FALSE
---   time = 4
--- -> State: 1.4 <- person C and D goes over
---   location[2] = TRUE
---   location[3] = TRUE
---   traveling[0] = TRUE
---   traveling[2] = FALSE
---   traveling[3] = FALSE
---   torch = TRUE
---   time = 14
--- -> State: 1.5 <- person A goes back
---   location[0] = FALSE
---   traveling[1] = TRUE
---   torch = FALSE
---   time = 15
--- -> State: 1.6 <- person A and B goes over.
---   location[0] = TRUE
---   location[1] = TRUE
---   traveling[1] = FALSE
---   torch = TRUE
---   time = 17
--- -- Loop starts here
--- -> State: 1.7 <-
---   location[0] = FALSE
---   traveling[0] = FALSE
---   torch = FALSE
---   time = 18
--- -> State: 1.8 <-
+LTLSPEC
+  !( (count(traveling[0], traveling[1], traveling[2], traveling[3]) <= 2)
+     U (location[0] & location[1] & location[2] & location[3] & time <= 17)); -- only 2 at most allowed to move at a time, goal is that all persons are on other side and time is less than equal to 17
+
+/--
+Trace Type: Counterexample 
+  -> State: 1.1 <-
+    location[0] = FALSE
+    location[1] = FALSE
+    location[2] = FALSE
+    location[3] = FALSE
+    traveling[0] = TRUE
+    traveling[1] = TRUE
+    traveling[2] = FALSE
+    traveling[3] = FALSE
+    torch = FALSE
+    time = 0
+  -> State: 1.2 <- ### first A and B go
+    location[0] = TRUE
+    location[1] = TRUE
+    traveling[0] = FALSE
+    torch = TRUE
+    time = 2
+  -> State: 1.3 <- ### B returns
+    location[1] = FALSE
+    traveling[1] = FALSE
+    traveling[2] = TRUE
+    traveling[3] = TRUE
+    torch = FALSE
+    time = 4
+  -> State: 1.4 <- ### then C and D go
+    location[2] = TRUE
+    location[3] = TRUE
+    traveling[0] = TRUE
+    traveling[2] = FALSE
+    traveling[3] = FALSE
+    torch = TRUE
+    time = 14
+  -> State: 1.5 <- ### A returns
+    location[0] = FALSE
+    traveling[1] = TRUE
+    torch = FALSE
+    time = 15
+  -> State: 1.6 <- ### finally A and B go
+    location[0] = TRUE
+    location[1] = TRUE
+    traveling[1] = FALSE
+    torch = TRUE
+    time = 17
+  -- Loop starts here
+  -> State: 1.7 <-
+    location[0] = FALSE
+    traveling[0] = FALSE
+    torch = FALSE
+    time = 18
+  -> State: 1.8 <-
+
+### Optimal solution, time is 17
+--/

@@ -1,56 +1,67 @@
 MODULE main
 VAR
-  choice:  boolean;
-  payment: boolean;
-  acc_payment: boolean;
-  n_items: 0..20;
-  state:   { ready, expect_payment, dispense_item };
+  choice:  boolean; -- ### choice has been made
+  payment: boolean; -- ### payment is made
+  acc_payment: boolean; -- ### payment is accepted
+  state:   { ready, expect_payment, dispense_item }; -- ### possible states
+  n_items: 0..10; -- ### number of items in machine
 
 ASSIGN
-  init (state) := ready;
+  init (state) := ready; -- ### initially machine is ready state
+  -- ### transitions of the machine
   next (state) := case
-		    state = ready          & choice & n_items>0:  expect_payment;
+		    state = ready          & choice & n_items > 0:  expect_payment;
 		    state = expect_payment & acc_payment: dispense_item;
-        state = expect_payment & payment: expect_payment;
-		    state = expect_payment & !choice: ready;
-        state = dispense_item:	      ready;
+		    state = expect_payment & !choice & !payment: ready;
+		    state = dispense_item:	      ready;
 		    TRUE:                             state;
   esac;
 
-  init (acc_payment) := FALSE;
-  next (acc_payment) := (state = expect_payment & payment);
+  init (acc_payment) := FALSE; -- ### initially payment has not been accepted
+  next (acc_payment) := (state = expect_payment & payment); -- ### payment is accepted if payment is received in expect_payment state
 
-  init (n_items) := 20;
+  -- ### decremented number of items when they are dispensed
   next (n_items) := case
-        (n_items > 0 & state = dispense_item): (n_items - 1);
-        TRUE:                           n_items;
+        state = dispense_item & n_items > 0: n_items - 1;
+        TRUE: n_items;
   esac;
+
 DEFINE
   release_item := (state = dispense_item);
 
-LTLSPEC
-  G(acc_payment -> F release_item) &
-  G(n_items >= 0) &
-  G(acc_payment -> n_items > 0) &
-  G( state = dispense_item -> n_items = next(n_items) + 1);
+LTLSPEC G(acc_payment -> F release_item);
 
-  -- -> State: 1.1 <-
-  --   choice = FALSE
-  --   payment = FALSE
-  --   acc_payment = FALSE
-  --   state = ready
-  --   release_item = FALSE
-  -- -> State: 1.2 <-
-  --   choice = TRUE
-  -- -> State: 1.3 <-
-  --   choice = FALSE
-  --   payment = TRUE
-  --   state = expect_payment
-  -- -> State: 1.4 <- Here we go from expect_payment and getting payed back to the ready. Leading to the customer paying but not getting their item.
-  --   payment = FALSE
-  --   acc_payment = TRUE
-  --   state = ready
-  -- -- Loop starts here
-  -- -> State: 1.5 <-
-  --   acc_payment = FALSE
-  -- -> State: 1.6 <-
+LTLSPEC G(n_items >= 0); -- n_items always >= 0
+LTLSPEC G(n_items = 0 -> G !acc_payment); -- payment accepted only if n_items > 0
+LTLSPEC (state = dispense_item -> X (n_items) = n_items - 1); -- if item is dispensed, counter is decremented
+-- ### FIX: forbid transition from ready to expect_payment if n_items <= 0
+
+/--
+Trace Description: LTL Counterexample 
+Trace Type: Counterexample 
+  -> State: 1.1 <- ### in initial state (ready), all variables are false
+    choice = FALSE
+    payment = FALSE
+    acc_payment = FALSE
+    state = ready
+    release_item = FALSE
+  -> State: 1.2 <- ### still in ready state. choice is true (choice is toggled) and other variables are false
+    choice = TRUE
+  -> State: 1.3 <- ### in expect_payment state because in previous step we were in ready state and choice was true. now choice is false (untoggled) and payment is true (payment is made). release_item and acc_payment are false
+    choice = FALSE
+    payment = TRUE
+    state = expect_payment
+  -> State: 1.4 <- ### in ready state because in previous step payment was made, but choice was not toggled. Now acc_payment is true because in previous step state was expect_payment and payment was true.
+    payment = FALSE
+    acc_payment = TRUE
+    state = ready
+  -- Loop starts here
+  -> State: 1.5 <- ### still in ready state. acc_payment is now false because in previous step state was not expect_payment nor was payment made. this is the state we stay at infinitely.
+    acc_payment = FALSE
+  -> State: 1.6 <-
+
+  ### This violates the property that everytime acc_payment is true, release_item is eventually true
+  ### FIX: forbid transition from expect_payment to ready if payment is made
+--/
+
+
