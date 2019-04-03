@@ -68,15 +68,18 @@ MODULE Door(door_cmd)
 -- Flag "cleaning" indicates if the airlock itself is being cleaned,
 -- so a "dirty" airlock can again be clean again in the next state.
 
-MODULE Airlock(inner_door, outer_door, inner_buttons, outer_buttons, cleaning)
+MODULE Airlock(inner_door, outer_door, inner_buttons, outer_buttons)
   VAR
     state: { clean, dirty };
     inner_door_cmd : {open, close, nop};
     outer_door_cmd : {open, close, nop};
     reset_inner : boolean;
     reset_outer : boolean;
+    cleaning : boolean;
 
   -- Button is reset only if it is pressed and the door is open.
+
+
 
   ASSIGN
     reset_inner := (inner_buttons & inner_door = open);
@@ -101,6 +104,14 @@ MODULE Airlock(inner_door, outer_door, inner_buttons, outer_buttons, cleaning)
       esac;
 
   ASSIGN
+    cleaning :=
+      case
+        state = dirty & inner_door = closed & outer_door = closed & !inner_buttons: TRUE;
+        TRUE: FALSE;
+      esac;
+
+
+  ASSIGN
     next (state) :=
       case
         -- Describe when the state becomes "dirty" (or "clean")
@@ -121,19 +132,14 @@ MODULE main
     outer_door   : Door(airlock.outer_door_cmd);
     inner_buttons: Button(airlock.reset_inner);
     outer_buttons: Button(airlock.reset_outer);
-    cleaning     : boolean;
     airlock : Airlock(inner_door.status, outer_door.status,
-                inner_buttons.pressed, outer_buttons.pressed,
-		cleaning);
+                inner_buttons.pressed, outer_buttons.pressed);
 
 FAIRNESS
   inner_buttons.pressed;
 
 FAIRNESS
   outer_buttons.pressed;
-
-FAIRNESS
-  cleaning;
 
 -- FAIRNESS
   -- Add another fairness property if needed
@@ -195,6 +201,14 @@ CTLSPEC
   -- REQ: A dirty airlock remains dirty if one of the doors is open or
   -- "cleaning" is false
 LTLSPEC
-  ((inner_door.status = open | outer_door.status = open | !cleaning) & airlock.state = dirty) ->
+  ((inner_door.status = open | outer_door.status = open | !airlock.cleaning) & airlock.state = dirty) ->
   next(airlock.state) = dirty
 ---------------------------------------------------------------------------
+-- Automated cleaning
+-- REQ: Cleaning only happens if the airlock is dirty
+CTLSPEC
+AG(airlock.cleaning -> airlock.state = dirty)
+
+--REQ: Cleaning only happens if both doors are closed
+CTLSPEC
+AG(airlock.cleaning -> outer_door.status = closed & inner_door.status = closed)
