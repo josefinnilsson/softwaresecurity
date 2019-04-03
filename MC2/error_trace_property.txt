@@ -1,0 +1,23 @@
+Have the wrong airlock.state. The airlock state should be clean not !clean.
+-- specification AG (outer_door.status = open -> !(airlock.state = clean))  is false
+-- as demonstrated by the following execution sequence
+Trace Description: CTL Counterexample
+Trace Type: Counterexample
+  -> State: 1.1 <-
+    inner_door.status = closed
+    outer_door.status = closed
+    inner_buttons.pressed = FALSE
+    outer_buttons.pressed = FALSE
+    cleaning = FALSE
+    airlock.state = clean
+    airlock.inner_door_cmd = nop
+    airlock.outer_door_cmd = nop
+    airlock.reset_inner = FALSE
+    airlock.reset_outer = FALSE
+  -> State: 1.2 <-
+    outer_buttons.pressed = TRUE
+    airlock.outer_door_cmd = open
+  -> State: 1.3 <-
+    outer_door.status = open
+    airlock.outer_door_cmd = close
+    airlock.reset_outer = TRUE

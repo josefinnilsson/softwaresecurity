@@ -1,0 +1,52 @@
+we give open command even if the door is already open
+
+
+
+-- invariant (door_cmd = open -> status = closed) IN inner_door is false
+-- as demonstrated by the following execution sequence
+Trace Description: AG alpha Counterexample
+Trace Type: Counterexample
+  -> State: 1.1 <-
+    inner_door.status = closed
+    outer_door.status = closed
+    inner_buttons.pressed = FALSE
+    outer_buttons.pressed = FALSE
+    cleaning = TRUE
+    airlock.state = clean
+    airlock.inner_door_cmd = nop
+    airlock.outer_door_cmd = nop
+    airlock.reset_inner = FALSE
+    airlock.reset_outer = FALSE
+  -> State: 1.2 <-
+    inner_buttons.pressed = TRUE
+    airlock.inner_door_cmd = open
+  -> State: 1.3 <-
+    inner_door.status = open
+    cleaning = FALSE
+    airlock.reset_inner = TRUE
+-- invariant (door_cmd = close -> status = open) IN inner_door is true
+-- invariant (door_cmd = open -> status = closed) IN outer_door is false
+-- as demonstrated by the following execution sequence
+Trace Description: AG alpha Counterexample
+Trace Type: Counterexample
+  -> State: 2.1 <-
+    inner_door.status = closed
+    outer_door.status = closed
+    inner_buttons.pressed = FALSE
+    outer_buttons.pressed = FALSE
+    cleaning = TRUE
+    airlock.state = clean
+    airlock.inner_door_cmd = nop
+    airlock.outer_door_cmd = nop
+    airlock.reset_inner = FALSE
+    airlock.reset_outer = FALSE
+  -> State: 2.2 <-
+    outer_buttons.pressed = TRUE
+    airlock.outer_door_cmd = open
+  -> State: 2.3 <-
+    outer_door.status = open
+    cleaning = FALSE
+    airlock.reset_outer = TRUE
+-- invariant (door_cmd = close -> status = open) IN outer_door is true
+-- invariant (reset -> pressed) IN inner_buttons is true
+-- invariant (reset -> pressed) IN outer_buttons is true
