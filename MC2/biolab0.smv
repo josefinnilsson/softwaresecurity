@@ -1,0 +1,165 @@
+---------------------------------------------------------------------------
+-- BUTTON                                                                --
+---------------------------------------------------------------------------
+
+-- For each door there is a button to request service, that can be
+-- pressed. A pressed button stays pressed unless reset by the
+-- controller. A button that is not pressed can become pressed
+-- nondeterministically.
+
+MODULE Button(reset)
+  VAR
+    pressed : boolean;
+  ASSIGN
+    init(pressed) := FALSE;
+    next(pressed) :=
+      case
+        pressed & reset  : FALSE;
+        pressed & !reset : TRUE;
+        !pressed         : {FALSE,TRUE};
+      esac;
+
+  -- REQ: The controller must not reset a button that is not pressed.
+  INVARSPEC (reset -> pressed)
+
+---------------------------------------------------------------------------
+-- DOOR                                                                  --
+---------------------------------------------------------------------------
+
+-- Each airlock (entrance) is equipped with a set of double doors.
+-- Each door can receive either open, close or nop commands
+-- from the controller, and it responds opening, closing, or
+-- preserving the current state.
+
+MODULE Door(door_cmd)
+  VAR
+    status : { open, closed };
+
+  ASSIGN
+    init(status) := closed;
+    next(status) :=
+      case
+        door_cmd = open      : open;
+        door_cmd = close     : closed;
+        door_cmd = nop       : status;
+      esac;
+
+  -- REQ: The controller can issue an open command only if the door is closed.
+  INVARSPEC (door_cmd = open  -> status = closed)
+
+  -- REQ: The controller can issue a close command only if the door is open.
+  INVARSPEC (door_cmd = close -> status = open)
+
+
+
+---------------------------------------------------------------------------
+-- AIRLOCK                                                            --
+---------------------------------------------------------------------------
+
+-- The airlock has an inner and outer door, and a pair of buttons (on the
+-- inside and outside) to request the door to open.
+-- For simplicity, the input of both buttons is merged.
+-- The airlock also has two states:
+--   clean: no hazardous materials in the airlock; prerequisite for the 
+--   outer door to open
+--   dirty: after the inner door has opened
+-- After the hazmat suit of a person coming from inside has been disposed
+-- of, and the air has been cleaned, a dirty airlock is clean again.
+-- Flag "cleaning" indicates if the airlock itself is being cleaned,
+-- so a "dirty" airlock can again be clean again in the next state.
+
+MODULE Airlock(inner_door, outer_door, inner_buttons, outer_buttons, cleaning)
+  VAR
+    state: { clean, dirty };
+    inner_door_cmd : {open, close, nop};
+    outer_door_cmd : {open, close, nop};
+    reset_inner : boolean;
+    reset_outer : boolean;
+
+  -- Button is reset only if it is pressed and the door is open.
+
+  ASSIGN
+    reset_inner := (inner_buttons & inner_door = open);
+    reset_outer := (outer_buttons & outer_door = open);
+
+  ASSIGN
+    outer_door_cmd :=
+      case
+        -- Specify when the door should open or close
+      esac;
+
+  ASSIGN
+    inner_door_cmd :=
+      case
+        -- Specify when the door should open or close
+      esac;
+
+  ASSIGN
+    next (state) :=
+      case
+        -- Describe when the state becomes "dirty" (or "clean")
+      esac;
+
+---------------------------------------------------------------------------
+-- MAIN                                                                  --
+---------------------------------------------------------------------------
+
+-- The main module shows the connection between modules.
+
+MODULE main
+  VAR
+    inner_door   : Door(airlock.inner_door_cmd);
+    outer_door   : Door(airlock.outer_door_cmd);
+    inner_buttons: Button(airlock.reset_inner);
+    outer_buttons: Button(airlock.reset_outer);
+    cleaning     : boolean;
+    airlock : Airlock(inner_door.status, outer_door.status,
+                inner_buttons.pressed, outer_buttons.pressed,
+		cleaning);
+
+FAIRNESS
+  inner_buttons.pressed;
+
+FAIRNESS
+  outer_buttons.pressed;
+
+FAIRNESS
+  cleaning;
+
+-- FAIRNESS
+  -- Add another fairness property if needed
+
+---------------------------------------------------------------------------
+-- REQUIREMENTS                                                          --
+---------------------------------------------------------------------------
+
+  -- The airlock controller must satisfy the following requirements.
+
+  -- REQ: Both doors are never open together
+
+  -- REQ: A door only opens if a button is pressed
+
+  -- REQ: If both buttons are pressed, the inner door should take precedence
+
+  -- REQ: Either door must eventually open (i.e., for either door,
+  -- there must eventually occur a state where it is open).
+
+  -- REQ: The state of the airlock is always "dirty" if the inner door is open
+
+  -- REQ: The next state of the airlock is always "dirty" if the inner door is open
+
+  -- REQ: The outer door never opens for a dirty airlock
+
+  -- REQ: No button can reach a state where it remains pressed forever.
+
+---------------------------------------------------------------------------
+-- Advanced properties for higher grades --
+---------------------------------------------------------------------------
+
+  -- REQ: No pressed button can be reset until the door opens.
+
+  -- REQ: A button must be reset as soon as the door opens
+
+  -- REQ: A dirty airlock remains dirty if one of the doors is open or
+  -- "cleaning" is false
+---------------------------------------------------------------------------
