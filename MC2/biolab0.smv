@@ -144,9 +144,9 @@ FAIRNESS
 -- FAIRNESS
   -- Add another fairness property if needed
 FAIRNESS
-  inner_door.status = open;
+  !inner_buttons.pressed;
 FAIRNESS
-  outer_door.status = open;
+  !outer_buttons.pressed;
 ---------------------------------------------------------------------------
 -- REQUIREMENTS                                                          --
 ---------------------------------------------------------------------------
