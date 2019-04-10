@@ -1,4 +1,16 @@
-Have the wrong airlock.state. The airlock state should be clean not !clean.
+This is an error trace of a faulty property. The model fails to satisfy the property
+AG (outer_door.status = open -> !(airlock.state = clean)) 
+The property states that always when the outer door is open, the airlock state should be dirty.
+
+According the description of the airlock, always when the outer door is open,
+the state of the airlock should be clean.
+
+We have thus faulty property, it should be 
+AG (outer_door.status = open -> (airlock.state = clean))
+instead.
+
+
+
 -- specification AG (outer_door.status = open -> !(airlock.state = clean))  is false
 -- as demonstrated by the following execution sequence
 Trace Description: CTL Counterexample

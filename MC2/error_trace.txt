@@ -1,4 +1,11 @@
-we give open command even if the door is already open
+This is an error trace of a faulty model. The model fails to satisfy the property:
+(door_cmd = open -> status = closed) in both inner and outer doors. 
+
+The property indicates that the door controller can only issue open command if the door
+is currently closed.
+
+The error in the code was that the controller did not check whether the door was already
+open when issuing open command.
 
 
 

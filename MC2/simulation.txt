@@ -1,3 +1,9 @@
+This is a trace of simulation of the airlock that has all features.
+The simulation is carried to 6 steps from the initial state.
+Each state has comment describing what happens in the state.
+
+
+
 NuSMV > go
 NuSMV > pick_state -r
 NuSMV > simulate -k 6
