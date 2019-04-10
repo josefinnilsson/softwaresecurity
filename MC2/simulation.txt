@@ -1,0 +1,116 @@
+NuSMV > go
+NuSMV > pick_state -r
+NuSMV > simulate -k 6
+********  Simulation Starting From State 1.1   ********
+NuSMV > show_traces -v
+    <!-- ################### Trace number: 1 ################### -->
+Trace Description: Simulation Trace
+Trace Type: Simulation
+  -> State: 1.1 <- #STATUS: Evacutaion mode. All doors are closed, no buttons are pressed. The room is dirty but is being cleaned.
+    inner_door.status = closed
+    outer_door.status = closed
+    inner_button_i.pressed = FALSE
+    inner_button_o.pressed = FALSE
+    outer_button_i.pressed = FALSE
+    outer_button_o.pressed = FALSE
+    airlock.state = dirty
+    airlock.inner_door_cmd = nop
+    airlock.outer_door_cmd = nop
+    airlock.reset_inner = FALSE
+    airlock.reset_outer = FALSE
+    airlock.cleaning = TRUE
+    airlock.access = evac
+    inner_buttons.pressed = FALSE
+    outer_buttons.pressed = FALSE
+    airlock.inner_buttons = FALSE
+    airlock.outer_buttons = FALSE
+  -> State: 1.2 <- #STATUS: Lockdown mode. The room is clean. The inside button of the inner door is pressed but the doors doesn't open because of the lockdown.
+    inner_door.status = closed
+    outer_door.status = closed
+    inner_button_i.pressed = TRUE
+    inner_button_o.pressed = FALSE
+    outer_button_i.pressed = FALSE
+    outer_button_o.pressed = FALSE
+    airlock.state = clean
+    airlock.inner_door_cmd = nop
+    airlock.outer_door_cmd = nop
+    airlock.reset_inner = FALSE
+    airlock.reset_outer = FALSE
+    airlock.cleaning = FALSE
+    airlock.access = lockdown
+    inner_buttons.pressed = TRUE
+    outer_buttons.pressed = FALSE
+    airlock.inner_buttons = TRUE
+    airlock.outer_buttons = FALSE
+  -> State: 1.3 <- #STATUS: Same as 1.2.
+    inner_door.status = closed
+    outer_door.status = closed
+    inner_button_i.pressed = TRUE
+    inner_button_o.pressed = FALSE
+    outer_button_i.pressed = FALSE
+    outer_button_o.pressed = FALSE
+    airlock.state = clean
+    airlock.inner_door_cmd = nop
+    airlock.outer_door_cmd = nop
+    airlock.reset_inner = FALSE
+    airlock.reset_outer = FALSE
+    airlock.cleaning = FALSE
+    airlock.access = lockdown
+    inner_buttons.pressed = TRUE
+    outer_buttons.pressed = FALSE
+    airlock.inner_buttons = TRUE
+    airlock.outer_buttons = FALSE
+  -> State: 1.4 <- #STATUS: Same.
+    inner_door.status = closed
+    outer_door.status = closed
+    inner_button_i.pressed = TRUE
+    inner_button_o.pressed = FALSE
+    outer_button_i.pressed = FALSE
+    outer_button_o.pressed = FALSE
+    airlock.state = clean
+    airlock.inner_door_cmd = nop
+    airlock.outer_door_cmd = nop
+    airlock.reset_inner = FALSE
+    airlock.reset_outer = FALSE
+    airlock.cleaning = FALSE
+    airlock.access = lockdown
+    inner_buttons.pressed = TRUE
+    outer_buttons.pressed = FALSE
+    airlock.inner_buttons = TRUE
+    airlock.outer_buttons = FALSE
+  -> State: 1.5 <- #STATUS: Same.
+    inner_door.status = closed
+    outer_door.status = closed
+    inner_button_i.pressed = TRUE
+    inner_button_o.pressed = FALSE
+    outer_button_i.pressed = FALSE
+    outer_button_o.pressed = FALSE
+    airlock.state = clean
+    airlock.inner_door_cmd = nop
+    airlock.outer_door_cmd = nop
+    airlock.reset_inner = FALSE
+    airlock.reset_outer = FALSE
+    airlock.cleaning = FALSE
+    airlock.access = lockdown
+    inner_buttons.pressed = TRUE
+    outer_buttons.pressed = FALSE
+    airlock.inner_buttons = TRUE
+    airlock.outer_buttons = FALSE
+  -> State: 1.6 <- #STATUS: Same.
+    inner_door.status = closed
+    outer_door.status = closed
+    inner_button_i.pressed = TRUE
+    inner_button_o.pressed = FALSE
+    outer_button_i.pressed = FALSE
+    outer_button_o.pressed = FALSE
+    airlock.state = clean
+    airlock.inner_door_cmd = nop
+    airlock.outer_door_cmd = nop
+    airlock.reset_inner = FALSE
+    airlock.reset_outer = FALSE
+    airlock.cleaning = FALSE
+    airlock.access = lockdown
+    inner_buttons.pressed = TRUE
+    outer_buttons.pressed = FALSE
+    airlock.inner_buttons = TRUE
+    airlock.outer_buttons = FALSE
