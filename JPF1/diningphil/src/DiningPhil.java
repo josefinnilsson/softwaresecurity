@@ -25,25 +25,35 @@ public class DiningPhil {
 
   static class Philosopher extends Thread {
 
+    int id;
     Fork left;
     Fork right;
 
-    public Philosopher(Fork left, Fork right) {
+    public Philosopher(Fork left, Fork right, int id) {
       this.left = left;
       this.right = right;
+      this.id = id;
       start();
     }
 
     public void run() {
       // think!
-      synchronized (left) {
+      if(id == 4) {
         synchronized (right) {
-          // eat!
+          synchronized (left) {
+            // eat!
+          }
+        }
+      } else {
+        synchronized (left) {
+          synchronized (right) {
+            // eat!
+          }
         }
       }
     }
   }
-  
+
   static final int N = 5;
 
   public static void main(String[] args) {
@@ -52,7 +62,7 @@ public class DiningPhil {
       forks[i] = new Fork();
     }
     for (int i = 0; i < N; i++) {
-      new Philosopher(forks[i], forks[(i + 1) % N]);
+      new Philosopher(forks[i], forks[(i + 1) % N], i);
     }
   }
 }
