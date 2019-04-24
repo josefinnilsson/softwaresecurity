@@ -4,10 +4,10 @@
  * This modified version aborts after having served one client. */
 
 import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.net.ServerSocket;
-import java.net.Socket;
-import java.util.Date;
+import env.java.io.OutputStreamWriter;
+import env.java.net.ServerSocket;
+import env.java.net.Socket;
+import env.java.util.Date;
 
 public class DaytimeServer {
 
@@ -33,9 +33,11 @@ public class DaytimeServer {
     }
     finally {
       try {
-        connection.close();
-	server.close();
-      }
+        if(connection!=null){
+          connection.close();
+        }
+	      server.close();
+    }
       catch(IOException e) {
         System.err.println(e);
       }
