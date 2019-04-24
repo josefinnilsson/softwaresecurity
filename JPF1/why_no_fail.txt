@@ -1,0 +1,3 @@
+The QueueTest does not fail when running it in queue-notify since the do-while-loop
+now is a while-loop. This means that the condition c + len > p now is checked before
+starting the wait preventing it from getting stuck.
