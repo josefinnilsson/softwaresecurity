@@ -1,0 +1,24 @@
+### 3.1.1 ###
+The patch in 2.2.3 is likely to be correct, because JPF fails to find errors in a reasonable time. The testing ends when JPF runs out of memory.
+
+Workers are added and removed in a thread-safe way, as access to the number of workers and the worker array is synchronized using locks.
+
+Because of the synchronization, no obvious exceptions are unhandled. 
+Checking is used by the workers to see if they can do certain things such as send messages to client of another worker.
+
+The only things in the ChatServer class shared by the workers are the worker array and the n.
+Access to these are controlled using locks, so that the workers can safely assume the values will not change after checking while they use the values.
+
+The only things shared between workers are the workers themselves and the printwriter handles. 
+Locks are used to make sure that worker cannot exit or destroy its printwriter while another worker assumes its alive.
+Access to the sockets of other workers are thus always safe.
+
+
+### 3.1.2 ###
+Based solely on the results, we cannot really say anything about the resulting system after the patch, 
+except that some code was added to it and the error(s) first detected does not happen before JPF runs out of memory.
+
+However if we carefully study the patched code, we can see that the exact error, NullPointerException is mitigated by locks and checking.
+
+The system is not proven to be correct because the full search tree is not explored by JPF, because lack of memory.
+
