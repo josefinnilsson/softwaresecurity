@@ -26,4 +26,7 @@ Now the relaying will cause a NullPointerException because worker[0] is NULL and
 
 The patch was first to check whether worker[x] is null before sending message to the worker
 This alone however caused other problems, such as unsynchronized value of n between the workers. 
-Therefore we added locks to synchronize access to the shared variable n
+Therefore we added locks to synchronize access to the shared variable n and the array
+
+Finally, an IO exception handling was going to be added to the send function to recover in case socket gets closed just before message is sent to it, 
+but it turns out that printwriter does not cause exceptions even if printing is attempted when the underlying socket is closed
