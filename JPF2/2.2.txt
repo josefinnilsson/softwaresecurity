@@ -1,0 +1,29 @@
+### 2.2.1 ###
+Table is in file 2.2.1.pdf
+
+
+### 2.2.2 ###
+
+--- Transitions 1-8 ---
+Server creates an array worker[2] to store workers, and an integer n to indicate the number of workers
+Server accepts a connection, starts a worker thread to serve the connection, the thread gets put into the worker[0] and n gets incremented. n is now 1
+Server accepts another connection, starts a worker thread to serve the connection, the thread gets put into the worker[1] and n gets incremented. n is now 2
+
+
+--- Transitions 5, 23-24, 30-31, 34 ---
+Worker[0] receives message from its client, and relays the message to all workers in the worker[] array
+Under the hood the relaying function sends the message to first n workers in the worker queue
+
+
+--- Transitions 36-37 ---
+The client of worker[0] disconnects, which causes worker[0] to call remove() on the chatserver object
+remove() sets the worker[0] to NULL and then relays a message to all workers in the worker array
+
+Now the relaying will cause a NullPointerException because worker[0] is NULL and because n is still 2
+
+
+### 2.2.3 ###
+
+The patch was first to check whether worker[x] is null before sending message to the worker
+This alone however caused other problems, such as unsynchronized value of n between the workers. 
+Therefore we added locks to synchronize access to the shared variable n

@@ -4,6 +4,7 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.concurrent.locks.ReentrantLock;
 
 class Worker implements Runnable {
     Socket sock;
@@ -19,8 +20,10 @@ class Worker implements Runnable {
 
     public void run() {
         System.out.println("Thread running: " + Thread.currentThread());
+        chatServer.lock.lock();
 	idx = chatServer.n;
-	chatServer.n++;
+    chatServer.n++;
+    chatServer.lock.unlock();
 	try {
             out = new PrintWriter(sock.getOutputStream(), true);
             assert(out != null);
@@ -49,6 +52,7 @@ class Worker implements Runnable {
 public class ChatServer {
     Worker workers[];
     int n = 0;
+    ReentrantLock lock = new ReentrantLock();
 
     public ChatServer(int maxServ) {
         int port = 4444;
@@ -79,9 +83,13 @@ public class ChatServer {
 
     public synchronized void sendAll(String s) {
         int i;
+        lock.lock();
         for (i = 0; i < n; i++) {
-	    workers[i].send(s);
+            if(workers[i] != null) {
+                workers[i].send(s);
+            }
         }
+        lock.unlock();
     }
 
     public synchronized void remove(int i) {
