@@ -21,25 +21,26 @@ class Worker implements Runnable {
     public void run() {
         System.out.println("Thread running: " + Thread.currentThread());
         chatServer.lock.lock();
-	idx = chatServer.n;
-    chatServer.n++;
-    chatServer.lock.unlock();
-	try {
+        idx = chatServer.n;
+        chatServer.n++;
+        chatServer.lock.unlock();
+        try {
             out = new PrintWriter(sock.getOutputStream(), true);
-            assert(out != null);
-	    assert(chatServer.workers[idx] == null);
-	    chatServer.workers[idx] = this;
-	    System.out.println("Registered worker " + idx + ".");
-            in = new BufferedReader(new
-                                    InputStreamReader(sock.getInputStream()));
+            assert (out != null);
+            chatServer.lock.lock();
+            assert (chatServer.workers[idx] == null);
+            chatServer.workers[idx] = this;
+            chatServer.lock.unlock();
+            System.out.println("Registered worker " + idx + ".");
+            in = new BufferedReader(new InputStreamReader(sock.getInputStream()));
             String s = null;
             while ((s = in.readLine()) != null) {
                 chatServer.sendAll("[" + idx + "]" + s);
             }
             sock.close();
-        } catch(IOException ioe) {
+        } catch (IOException ioe) {
             System.out.println("Worker thread " + idx + ": " + ioe);
-	} finally {
+        } finally {
             chatServer.remove(idx);
         }
     }
@@ -58,26 +59,26 @@ public class ChatServer {
         int port = 4444;
         workers = new Worker[maxServ];
         Socket sock;
-	ServerSocket servsock = null;
+        ServerSocket servsock = null;
         try {
             servsock = new ServerSocket(port);
             while (maxServ-- != 0) {
                 sock = servsock.accept();
-		Worker worker = new Worker(sock, this);
-		new Thread(worker).start();
+                Worker worker = new Worker(sock, this);
+                new Thread(worker).start();
             }
-	    servsock.close();
-        } catch(IOException ioe) {
+            servsock.close();
+        } catch (IOException ioe) {
             System.err.println("Server: " + ioe);
         }
         System.out.println("Server shutting down.");
     }
 
     public static void main(String args[]) throws IOException {
-	if (args.length == 0) {
+        if (args.length == 0) {
             new ChatServer(-1);
-	} else {
-	    new ChatServer(Integer.parseInt(args[0]));
+        } else {
+            new ChatServer(Integer.parseInt(args[0]));
         }
     }
 
@@ -85,7 +86,7 @@ public class ChatServer {
         int i;
         lock.lock();
         for (i = 0; i < n; i++) {
-            if(workers[i] != null) {
+            if (workers[i] != null) {
                 workers[i].send(s);
             }
         }
@@ -93,7 +94,9 @@ public class ChatServer {
     }
 
     public synchronized void remove(int i) {
-	workers[i] = null;
+        lock.lock();
+        workers[i] = null;
+        lock.unlock();
         sendAll("Client " + i + " quit.");
     }
 }
