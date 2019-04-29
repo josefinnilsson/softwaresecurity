@@ -36,7 +36,15 @@ public class ChatClient {
             out.write(id + ": Hello, world!\n");
             out.flush();
             for (int i = 0; i < 1; i++) {
-                System.out.println(id + ": Received " + in.readLine());
+                String input = in.readLine();
+                if (input != null) {
+                  if (input.equals("Server busy") || input.matches("\\[\\d+\\]\\d+: Hello, world!")) {
+                    System.out.println(id + ": Received " + input);
+                  } else {
+                    System.out.println("INPUT: " + input);
+                    assert false;
+                  }
+                }
             }
             out.close();
         } catch(IOException e) {
