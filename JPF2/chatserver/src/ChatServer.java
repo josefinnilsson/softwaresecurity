@@ -5,6 +5,7 @@ import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.concurrent.locks.ReentrantLock;
+import gov.nasa.jpf.vm.Verify;
 
 class Worker implements Runnable {
     Socket sock;
@@ -16,6 +17,15 @@ class Worker implements Runnable {
     public Worker(Socket s, ChatServer cs) {
         chatServer = cs;
         sock = s;
+        if(Verify.getBoolean()){
+          out = new PrintWriter(sock.getOutputStream(), true);
+        }
+        if(Verify.getBoolean()){
+          in = new BufferedReader(new InputStreamReader(sock.getInputStream()));
+        }
+        if(out == null||in == null){
+          throw new IOException();
+        }
     }
 
     public void run() {
@@ -25,14 +35,12 @@ class Worker implements Runnable {
         chatServer.n++;
         chatServer.lock.unlock();
         try {
-            out = new PrintWriter(sock.getOutputStream(), true);
             assert (out != null);
             chatServer.lock.lock();
             assert (chatServer.workers[idx] == null);
             chatServer.workers[idx] = this;
             chatServer.lock.unlock();
             System.out.println("Registered worker " + idx + ".");
-            in = new BufferedReader(new InputStreamReader(sock.getInputStream()));
             String s = null;
             while ((s = in.readLine()) != null) {
                 chatServer.sendAll("[" + idx + "]" + s);
@@ -64,7 +72,13 @@ public class ChatServer {
             servsock = new ServerSocket(port);
             while (maxServ-- != 0) {
                 sock = servsock.accept();
-                Worker worker = new Worker(sock, this);
+                Worker worker = null;
+                try{
+                  worker = new Worker(sock, this);
+                } catch(IOException e){
+                  e.printStackTrace();
+                  continue;
+                }
                 new Thread(worker).start();
             }
             servsock.close();
