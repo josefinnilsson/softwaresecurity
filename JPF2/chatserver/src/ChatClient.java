@@ -41,7 +41,6 @@ public class ChatClient {
                   if (input.equals("Server busy") || input.matches("\\[\\d+\\]\\d+: Hello, world!")) {
                     System.out.println(id + ": Received " + input);
                   } else {
-                    System.out.println("INPUT: " + input);
                     assert false;
                   }
                 }
