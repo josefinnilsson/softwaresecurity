@@ -77,7 +77,7 @@ public class ChatServer {
         Socket sock;
         ServerSocket servsock = null;
         workQueue = new SynchronousQueue<Runnable>();
-        executor = new ThreadPoolExecutor(2, 0, 10, TimeUnit.SECONDS, workQueue, handler);
+        executor = new ThreadPoolExecutor(2, 2, 10, TimeUnit.SECONDS, workQueue, handler);
         try {
             servsock = new ServerSocket(port);
             while (maxServ-- != 0) {
