@@ -14,7 +14,7 @@ class Worker implements Runnable {
     ChatServer chatServer;
     int idx;
 
-    public Worker(Socket s, ChatServer cs) {
+    public Worker(Socket s, ChatServer cs) throws IOException {
         chatServer = cs;
         sock = s;
         if(Verify.getBoolean()){
