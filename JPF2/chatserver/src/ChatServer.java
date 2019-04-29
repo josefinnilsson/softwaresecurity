@@ -6,6 +6,11 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.concurrent.locks.ReentrantLock;
 import gov.nasa.jpf.vm.Verify;
+import env.java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.SynchronousQueue;
+import env.java.util.concurrent.RejectedExecutionHandler;
+
 
 class Worker implements Runnable {
     Socket sock;
@@ -62,12 +67,17 @@ public class ChatServer {
     Worker workers[];
     int n = 0;
     ReentrantLock lock = new ReentrantLock();
+    ThreadPoolExecutor executor;
+    SynchronousQueue<Runnable> workQueue;
+    RejectedExecutionHandler handler;
 
     public ChatServer(int maxServ) {
         int port = 4444;
         workers = new Worker[maxServ];
         Socket sock;
         ServerSocket servsock = null;
+        workQueue = new SynchronousQueue<Runnable>();
+        executor = new ThreadPoolExecutor(2, 0, 10, TimeUnit.SECONDS, workQueue, handler);
         try {
             servsock = new ServerSocket(port);
             while (maxServ-- != 0) {
@@ -75,16 +85,17 @@ public class ChatServer {
                 Worker worker = null;
                 try{
                   worker = new Worker(sock, this);
+                  executor.execute(worker);
                 } catch(IOException e){
                   e.printStackTrace();
                   continue;
                 }
-                new Thread(worker).start();
             }
             servsock.close();
         } catch (IOException ioe) {
             System.err.println("Server: " + ioe);
         }
+        executor.shutdown();
         System.out.println("Server shutting down.");
     }
 
