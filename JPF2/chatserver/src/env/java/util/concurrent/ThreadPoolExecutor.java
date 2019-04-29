@@ -9,15 +9,34 @@ import java.util.concurrent.TimeUnit;
     lightweight enough for JPF. */
 
 public class ThreadPoolExecutor {
+  int corePoolSize;
+  int maximumPoolSize;
+  long keepAliveTime;
+  TimeUnit unit;
+  SynchronousQueue workQueue;
+  RejectedExecutionHandler handler;
+  int activeThreads;
     public ThreadPoolExecutor(int corePoolSize, int maximumPoolSize,
 			      long keepAliveTime, TimeUnit unit,
 			      BlockingQueue<Runnable> workQueue,
 			      RejectedExecutionHandler handler) {
-      // TODO: fill in for exercise
+              this.corePoolSize = corePoolSize;
+              this.maximumPoolSize = maximumPoolSize;
+              this.keepAliveTime = keepAliveTime;
+              this.unit = unit;
+              this.workQueue = (SynchronousQueue) workQueue;
+              this.handler = handler;
+              activeThreads = 0;
     }
 
     public void shutdown() { } // stub
 
-    public void execute(Runnable r) { // TODO: fill in for exercise
+    public synchronized void execute(Runnable r) {
+      if(activeThreads<maximumPoolSize){
+        new Thread(r).start();
+        activeThreads++;
+      } else {
+        handler.rejectedExecution(r,this);
+      }
     }
 }
