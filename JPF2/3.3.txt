@@ -1,0 +1,59 @@
+###
+Error trace when running with maximumPoolSize = 0.
+RejectedExecutionHandler is not instantiated and will therefore throw a NullPointerException.
+###
+====================================================== snapshot #1
+thread java.lang.Thread:{id:0,name:main,status:RUNNING,priority:5,isDaemon:false,lockCount:0,suspendCount:0}
+  owned locks:env.java.util.concurrent.ThreadPoolExecutor@34e
+  call stack:
+	at env.java.util.concurrent.ThreadPoolExecutor.execute(ThreadPoolExecutor.java:39)
+	at ChatServer.<init>(ChatServer.java:88)
+	at ChatServer.main(ChatServer.java:106)
+
+thread gov.nasa.jpf.FinalizerThread:{id:3,name:finalizer,status:WAITING,priority:5,isDaemon:false,lockCount:0,suspendCount:0}
+  waiting on: java.lang.Object@c7
+  call stack:
+
+thread java.lang.Thread:{id:1,name:main,status:WAITING,priority:5,isDaemon:false,lockCount:0,suspendCount:0}
+  owned locks:java.lang.Object@48d,java.io.InputStreamReader@48e
+  waiting on: java.lang.Object@442
+  call stack:
+	at java.net.SocketInputStream.read(SocketInputStream.java)
+	at java.io.InputStreamReader.read(InputStreamReader.java:93)
+	at java.io.BufferedReader.fill(BufferedReader.java:161)
+	at java.io.BufferedReader.readLine(BufferedReader.java:324)
+	at java.io.BufferedReader.readLine(BufferedReader.java:389)
+	at ChatClient.exec(ChatClient.java:39)
+	at ChatClient.main(ChatClient.java:16)
+
+thread gov.nasa.jpf.FinalizerThread:{id:4,name:finalizer,status:WAITING,priority:5,isDaemon:false,lockCount:0,suspendCount:0}
+  waiting on: java.lang.Object@18c
+  call stack:
+
+thread java.lang.Thread:{id:2,name:main,status:RUNNING,priority:5,isDaemon:false,lockCount:0,suspendCount:0}
+  call stack:
+	at java.net.Socket.connect(Socket.java)
+	at java.net.Socket.connect(Socket.java:77)
+	at java.net.Socket.connect(Socket.java:70)
+	at ChatClient.exec(ChatClient.java:29)
+	at ChatClient.main(ChatClient.java:16)
+
+thread gov.nasa.jpf.FinalizerThread:{id:5,name:finalizer,status:WAITING,priority:5,isDaemon:false,lockCount:0,suspendCount:0}
+  waiting on: java.lang.Object@251
+  call stack:
+
+
+====================================================== results
+error #1: gov.nasa.jpf.vm.NoUncaughtExceptionsProperty "java.lang.NullPointerException: Calling 'rejectedE..."
+
+====================================================== statistics
+elapsed time:       00:00:00
+states:             new=134,visited=45,backtracked=169,end=12
+search:             maxDepth=20,constraints=0
+choice generators:  thread=123 (signal=0,lock=1,sharedRef=0,threadApi=0,reschedule=75), data=5
+heap:               new=2954,released=2239,maxLive=1409,gcCycles=176
+instructions:       25232
+max memory:         481MB
+loaded code:        classes=120,methods=5063
+
+====================================================== search finished: 4/29/19 3:05 PM
