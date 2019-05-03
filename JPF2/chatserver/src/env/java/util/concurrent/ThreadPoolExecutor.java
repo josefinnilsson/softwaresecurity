@@ -14,12 +14,12 @@ public class ThreadPoolExecutor {
   long keepAliveTime;
   TimeUnit unit;
   SynchronousQueue workQueue;
-  RejectedExecutionHandler handler;
+  RejectedEH handler;
   int activeThreads;
     public ThreadPoolExecutor(int corePoolSize, int maximumPoolSize,
 			      long keepAliveTime, TimeUnit unit,
 			      BlockingQueue<Runnable> workQueue,
-			      RejectedExecutionHandler handler) {
+			      RejectedEH handler) {
               this.corePoolSize = corePoolSize;
               this.maximumPoolSize = maximumPoolSize;
               this.keepAliveTime = keepAliveTime;
