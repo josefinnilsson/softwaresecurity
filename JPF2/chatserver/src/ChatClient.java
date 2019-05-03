@@ -36,12 +36,16 @@ public class ChatClient {
                 new BufferedWriter(new PrintWriter(socket.getOutputStream()));
             out.write("Hello, world!\n");
             out.flush();
-            String input;
-            while ((input = in.readLine()) != null) {
-              assert (input.equals("Server busy") || input.matches("\\[\\d+\\]\\d+: (.*)") ||
-              input.matches("Client \\d+ quit."));
+
+            
+            String input = in.readLine();
+            if (input != null) {
+                System.out.println(id + ": Received " + input);
+                assert (input.equals("Server busy") || input.matches("\\[\\d+\\](.*)") || input.matches("Client \\d+ quit."));
+            } else {
                 System.out.println(id + ": Received " + input);
             }
+
             in.close();
             out.close();
         } catch(IOException e) {
