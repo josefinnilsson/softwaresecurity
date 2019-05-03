@@ -1,0 +1,122 @@
+### Partial error trace when running ThreadPoolExecutor with max 0 threads
+and asserting false when RejectedExecutionHandler throws an error ###
+
+====================================================== search started: 5/3/19 11:17 AM
+java.io.IOException
+	at Worker.<init>(ChatServer.java:33)
+	at ChatServer.<init>(ChatServer.java:93)
+	at ChatServer.main(ChatServer.java:112)
+Client 0 connected.
+java.io.IOException
+	at Worker.<init>(ChatServer.java:33)
+	at ChatServer.<init>(ChatServer.java:93)
+	at ChatServer.main(ChatServer.java:112)
+Server shutting down.
+Client 0 connected.
+Client 0 connected.
+Client 0 connected.
+java.io.IOException
+	at Worker.<init>(ChatServer.java:33)
+	at ChatServer.<init>(ChatServer.java:93)
+	at ChatServer.main(ChatServer.java:112)
+Server shutting down.
+Client 0 connected.
+Client 0 connected.
+Client 0 connected.
+java.io.IOException
+	at Worker.<init>(ChatServer.java:33)
+	at ChatServer.<init>(ChatServer.java:93)
+	at ChatServer.main(ChatServer.java:112)
+Server shutting down.
+Client 0 connected.
+Client 0 connected.
+Client 0 connected.
+RejectedExecution thrown!
+
+
+====================================================== snapshot #1
+thread java.lang.Thread:{id:0,name:main,status:RUNNING,priority:5,isDaemon:false,lockCount:0,suspendCount:0}
+  owned locks:env.java.util.concurrent.ThreadPoolExecutor@355
+  call stack:
+	at env.java.util.concurrent.RejectedEH.rejectedExecution(RejectedEH.java:6)
+	at env.java.util.concurrent.ThreadPoolExecutor.execute(ThreadPoolExecutor.java:39)
+	at ChatServer.<init>(ChatServer.java:94)
+	at ChatServer.main(ChatServer.java:112)
+
+thread gov.nasa.jpf.FinalizerThread:{id:3,name:finalizer,status:WAITING,priority:5,isDaemon:false,lockCount:0,suspendCount:0}
+  waiting on: java.lang.Object@c7
+  call stack:
+
+thread java.lang.Thread:{id:2,name:main,status:RUNNING,priority:5,isDaemon:false,lockCount:0,suspendCount:0}
+  call stack:
+	at java.net.Socket.connect(Socket.java)
+	at java.net.Socket.connect(Socket.java:77)
+	at java.net.Socket.connect(Socket.java:70)
+	at ChatClient.exec(ChatClient.java:29)
+	at ChatClient.main(ChatClient.java:16)
+
+thread gov.nasa.jpf.FinalizerThread:{id:5,name:finalizer,status:WAITING,priority:5,isDaemon:false,lockCount:0,suspendCount:0}
+  waiting on: java.lang.Object@251
+  call stack:
+
+
+====================================================== results
+error #1: gov.nasa.jpf.vm.NoUncaughtExceptionsProperty "java.lang.AssertionError  at env.java.util.concurr..."
+
+====================================================== statistics
+elapsed time:       00:00:00
+states:             new=61,visited=9,backtracked=58,end=9
+search:             maxDepth=18,constraints=0
+choice generators:  thread=50 (signal=0,lock=1,sharedRef=0,threadApi=0,reschedule=29), data=5
+heap:               new=2237,released=934,maxLive=1415,gcCycles=67
+instructions:       22418
+max memory:         481MB
+loaded code:        classes=122,methods=5237
+
+====================================================== search finished: 5/3/19 11:17 AM
+
+### Partial error trace when running ThreadPoolExecutor with max 1 threads
+and asserting false when RejectedExecutionHandler throws an error ###
+====================================================== snapshot #1
+thread java.lang.Thread:{id:0,name:main,status:RUNNING,priority:5,isDaemon:false,lockCount:0,suspendCount:0}
+  owned locks:env.java.util.concurrent.ThreadPoolExecutor@355
+  call stack:
+	at env.java.util.concurrent.RejectedEH.rejectedExecution(RejectedEH.java:6)
+	at env.java.util.concurrent.ThreadPoolExecutor.execute(ThreadPoolExecutor.java:39)
+	at ChatServer.<init>(ChatServer.java:94)
+	at ChatServer.main(ChatServer.java:112)
+
+thread gov.nasa.jpf.FinalizerThread:{id:3,name:finalizer,status:WAITING,priority:5,isDaemon:false,lockCount:0,suspendCount:0}
+  waiting on: java.lang.Object@c7
+  call stack:
+
+thread java.lang.Thread:{id:2,name:main,status:RUNNING,priority:5,isDaemon:false,lockCount:0,suspendCount:0}
+  call stack:
+	at java.net.Socket.connect(Socket.java)
+	at java.net.Socket.connect(Socket.java:77)
+	at java.net.Socket.connect(Socket.java:70)
+	at ChatClient.exec(ChatClient.java:29)
+	at ChatClient.main(ChatClient.java:16)
+
+thread gov.nasa.jpf.FinalizerThread:{id:5,name:finalizer,status:WAITING,priority:5,isDaemon:false,lockCount:0,suspendCount:0}
+  waiting on: java.lang.Object@251
+  call stack:
+
+thread java.lang.Thread:{id:6,name:Thread-1,status:RUNNING,priority:5,isDaemon:false,lockCount:0,suspendCount:0}
+  call stack:
+
+
+====================================================== results
+error #1: gov.nasa.jpf.vm.NoUncaughtExceptionsProperty "java.lang.AssertionError  at env.java.util.concurr..."
+
+====================================================== statistics
+elapsed time:       00:00:10
+states:             new=14828,visited=13488,backtracked=28299,end=64
+search:             maxDepth=227,constraints=0
+choice generators:  thread=14730 (signal=0,lock=1047,sharedRef=7615,threadApi=10,reschedule=3861), data=78
+heap:               new=66585,released=130301,maxLive=1528,gcCycles=28155
+instructions:       22603710
+max memory:         655MB
+loaded code:        classes=122,methods=5417
+
+====================================================== search finished: 5/3/19 11:20 AM
