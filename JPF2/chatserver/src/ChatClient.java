@@ -4,7 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 
@@ -31,20 +31,20 @@ public class ChatClient {
             InputStreamReader istr =
                 new InputStreamReader(socket.getInputStream());
             BufferedReader in = new BufferedReader(istr);
-            OutputStreamWriter out =
-                new OutputStreamWriter(socket.getOutputStream());
+            PrintWriter out =
+                new PrintWriter(socket.getOutputStream(),true);
             out.write(id + ": Hello, world!\n");
             out.flush();
-            for (int i = 0; i < 1; i++) {
-                String input = in.readLine();
-                if (input != null) {
-                  if (input.equals("Server busy") || input.matches("\\[\\d+\\]\\d+: Hello, world!")) {
-                    System.out.println(id + ": Received " + input);
-                  } else {
-                    assert false;
-                  }
-                }
+            while (in.ready()) {
+              String input = in.readLine();
+              if (input.equals("Server busy") || input.matches("\\[\\d+\\]\\d+: Hello, world!") ||
+              input.matches("Client \\d+ quit.")) {
+                System.out.println(id + ": Received " + input);
+              } else {
+                assert false;
+              }
             }
+            in.close();
             out.close();
         } catch(IOException e) {
             System.err.println("Client " + id + ": " + e);

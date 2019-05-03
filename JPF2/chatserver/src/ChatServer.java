@@ -10,6 +10,7 @@ import env.java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.SynchronousQueue;
 import env.java.util.concurrent.RejectedExecutionHandler;
+import env.java.util.concurrent.RejectedEH;
 
 
 class Worker implements Runnable {
@@ -46,10 +47,13 @@ class Worker implements Runnable {
             chatServer.workers[idx] = this;
             chatServer.lock.unlock();
             System.out.println("Registered worker " + idx + ".");
-            String s = null;
-            while ((s = in.readLine()) != null) {
+            while (in.ready()) {
+              String s = in.readLine();
+              if (s != null) {
                 chatServer.sendAll("[" + idx + "]" + s);
+              }
             }
+            in.close();
             sock.close();
         } catch (IOException ioe) {
             System.out.println("Worker thread " + idx + ": " + ioe);
@@ -58,7 +62,8 @@ class Worker implements Runnable {
         }
     }
 
-    public void send(String s) {
+    public synchronized void send(String s) {
+      System.err.println("Calling send with " + s);
         out.println(s);
     }
 }
@@ -69,15 +74,16 @@ public class ChatServer {
     ReentrantLock lock = new ReentrantLock();
     ThreadPoolExecutor executor;
     SynchronousQueue<Runnable> workQueue;
-    RejectedExecutionHandler handler;
+    RejectedEH handler;
 
     public ChatServer(int maxServ) {
         int port = 4444;
         workers = new Worker[maxServ];
         Socket sock;
         ServerSocket servsock = null;
+        handler = new RejectedEH();
         workQueue = new SynchronousQueue<Runnable>();
-        executor = new ThreadPoolExecutor(2, 2, 10, TimeUnit.SECONDS, workQueue, handler);
+        executor = new ThreadPoolExecutor(2, maxServ, 10, TimeUnit.SECONDS, workQueue, handler);
         try {
             servsock = new ServerSocket(port);
             while (maxServ-- != 0) {
@@ -121,6 +127,7 @@ public class ChatServer {
     public synchronized void remove(int i) {
         lock.lock();
         workers[i] = null;
+        System.out.println("Worker " + i + " got removed");
         lock.unlock();
         sendAll("Client " + i + " quit.");
     }
