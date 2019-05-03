@@ -63,7 +63,6 @@ class Worker implements Runnable {
     }
 
     public synchronized void send(String s) {
-      System.err.println("Calling send with " + s);
         out.println(s);
     }
 }
