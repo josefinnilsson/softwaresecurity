@@ -1,8 +1,6 @@
-### Error trace when sending Hello, world!! instead of Hello, world!
-The input validation checks that the input is either equal to
-[id]: Hello, world! or Client id quit or Server busy and hence the above
-message will trigger the assertion failure which was injected in the else statement
-of the validation checker in ChatClient. ###
+### Error trace when sending Hello, world! without prefixing with client id.
+The client checks that the validation is either sent from a client (starting with [id])
+or that the message is Server busy. ###
 
 ====================================================== snapshot #1
 thread gov.nasa.jpf.FinalizerThread:{id:3,name:finalizer,status:WAITING,priority:5,isDaemon:false,lockCount:0,suspendCount:0}
