@@ -1,0 +1,50 @@
+### Program:
+declare ref hx : low;
+
+ref hx = h1;
+l1 = deref(hx);
+
+ref hx = h2;
+l2 = deref(hx);
+
+ref hx = h3;
+l3 = deref(hx);
+
+ref hx = h4;
+l4 = deref(hx);
+
+ref hx = h5;
+l5 = deref(hx);
+
+ref hx = h6;
+l6 = deref(hx);
+
+### Output:
+Parsing...
+Typechecking...
+
+*** Run 1: Initializing h[1-6] with secrets...
+Executing...
+Execution finished in 0 steps
+Final (low) memory: 
+   l1 = false
+   l2 = false
+   l3 = false
+   l4 = false
+   l5 = true
+   l6 = true
+Leak successful!
+
+*** Run 2: Initializing h[1-6] with secrets...
+Executing...
+Execution finished in 0 steps
+Final (low) memory: 
+   l1 = true
+   l2 = true
+   l3 = false
+   l4 = true
+   l5 = true
+   l6 = true
+Leak successful!
+
+Congrats, seems you've leaked the secret correctly. Code: hospital

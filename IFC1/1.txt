@@ -1,0 +1,39 @@
+### Program:
+l1 = h1;
+l2 = h2;
+l3 = h3;
+l4 = h4;
+l5 = h5;
+l6 = h6;
+
+### Output:
+
+
+Parsing...
+Typechecking...
+
+*** Run 1: Initializing h[1-6] with secrets...
+Executing...
+Execution finished in 6 steps
+Final (low) memory: 
+   l1 = false
+   l2 = true
+   l3 = false
+   l4 = false
+   l5 = false
+   l6 = true
+Leak successful!
+
+*** Run 2: Initializing h[1-6] with secrets...
+Executing...
+Execution finished in 6 steps
+Final (low) memory: 
+   l1 = true
+   l2 = true
+   l3 = true
+   l4 = false
+   l5 = false
+   l6 = false
+Leak successful!
+
+Congrats, seems you've leaked the secret correctly. Code: codfish

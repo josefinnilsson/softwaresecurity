@@ -1,0 +1,49 @@
+### Program:
+let (x = h1) in {
+   l1 = x;
+}
+let (x = h2) in {
+   l2 = x;
+}
+let (x = h3) in {
+   l3 = x;
+}
+let (x = h4) in {
+   l4 = x;
+}
+let (x = h5) in {
+   l5 = x;
+}  
+let (x = h6) in {
+   l6 = x;
+}
+
+### Output:
+Parsing...
+Typechecking...
+
+*** Run 1: Initializing h[1-6] with secrets...
+Executing...
+Execution finished in 6 steps
+Final (low) memory: 
+   l1 = true
+   l2 = true
+   l3 = true
+   l4 = true
+   l5 = true
+   l6 = true
+Leak successful!
+
+*** Run 2: Initializing h[1-6] with secrets...
+Executing...
+Execution finished in 6 steps
+Final (low) memory: 
+   l1 = false
+   l2 = true
+   l3 = false
+   l4 = false
+   l5 = false
+   l6 = false
+Leak successful!
+
+Congrats, seems you've leaked the secret correctly. Code: collect

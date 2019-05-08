@@ -1,0 +1,91 @@
+### Program:
+
+declare array x : low; 
+
+x[true] = false;
+x[false] = false;
+x[h1] = true;
+c = x[true];
+if(c){
+  l1 = true;
+} else {
+  l1 = false;
+}
+x[true] = false;
+x[false] = false;
+x[h2] = true;
+c = x[true];
+if(c){
+  l2 = true;
+} else {
+  l2 = false;
+}
+x[true] = false;
+x[false] = false;
+x[h3] = true;
+c = x[true];
+if(c){
+  l3 = true;
+} else {
+  l3 = false;
+}
+x[true] = false;
+x[false] = false;
+x[h4] = true;
+c = x[true];
+if(c){
+  l4 = true;
+} else {
+  l4 = false;
+}
+x[true] = false;
+x[false] = false;
+x[h5] = true;
+c = x[true];
+if(c){
+  l5 = true;
+} else {
+  l5 = false;
+}
+x[true] = false;
+x[false] = false;
+x[h6] = true;
+c = x[true];
+if(c){
+  l6 = true;
+} else {
+  l6 = false;
+}
+
+### Output:
+
+Parsing...
+Typechecking...
+
+*** Run 1: Initializing h[1-6] with secrets...
+Executing...
+Execution finished in 6 steps
+Final (low) memory: 
+   c = false
+   l1 = true
+   l2 = true
+   l3 = false
+   l4 = false
+   l5 = false
+   l6 = false
+Leak successful!
+
+*** Run 2: Initializing h[1-6] with secrets...
+Executing...
+Execution finished in 6 steps
+Final (low) memory: 
+   c = true
+   l1 = false
+   l2 = false
+   l3 = true
+   l4 = false
+   l5 = true
+   l6 = true
+Leak successful!
+
+Congrats, seems you've leaked the secret correctly. Code: success

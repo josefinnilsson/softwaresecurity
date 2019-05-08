@@ -1,0 +1,35 @@
+### Program:
+l1 = true;
+l2 = false;
+l3 = true;
+l4 = false;
+l5 = false;
+l6 = true;
+
+if(h1){
+    skip;
+     skip;
+ skip;
+} else{
+    skip;
+ skip;
+}
+
+### Output:
+
+Parsing...
+Typechecking...
+
+*** Run 1: Initializing h[1-6] with secrets...
+Executing...
+Execution finished in 6 steps
+Final (low) memory: 
+   l1 = true
+   l2 = false
+   l3 = true
+   l4 = false
+   l5 = false
+   l6 = true
+Leak successful!
+
+Congrats, seems you've leaked the secret correctly. Code: joystick
