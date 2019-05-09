@@ -16,15 +16,24 @@ function getDist(x1, y1, x2, y2) {
 }
 
 function nearestRestaurant(xa, ya, xb, yb) {
-	let closestDistance = Number.MAX_VALUE
-	let closestRestaurant = restaurants[0]
-	restaurants.forEach(function(r) {
-		const da = getDist(xa, ya, r.locX, r.locY)
-		const db = getDist(xb, yb, r.locX, r.locY)
+	let closestDistance = lbl(Number.MAX_VALUE, 'alice', 'bob')
+	let closestRestaurant = lbl(restaurants[0], 'alice', 'bob')
+	for (let i = 0; i < restaurants.length; i++) {
+		const r = restaurants[i]
+		const da = lbl(getDist(xa, ya, r.locX, r.locY), 'alice')
+		const db = lbl(getDist(xb, yb, r.locX, r.locY), 'bob')
 		if ((da + db) < closestDistance) {
 			closestDistance = (da + db)
 			closestRestaurant = r
 		}
-	})
+	}
 	return closestRestaurant
 }
+
+let xa = lbl(0, 'alice')
+let ya = lbl(0, 'alice')
+let xb = lbl(1, 'bob')
+let yb = lbl(1, 'bob')
+
+lprint(nearestRestaurant(xa, ya, xb, yb))
+
