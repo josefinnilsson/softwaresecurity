@@ -5,19 +5,19 @@ let restaurants = [
 	{ name: 'Restaurant4', locX: 5, locY: 6, avgPrice: 200 },
 	{ name: 'Restaurant5', locX: 4, locY: 12, avgPrice: 300 },
 	{ name: 'Restaurant6', locX: 12, locY: 23, avgPrice: 150 },
-	{ name: 'Restaurant7', locX: -10, locY: -10, avgPrice: 75 },
-	{ name: 'Restaurant8', locX: -5, locY: 25, avgPrice: 105 },
-	{ name: 'Restaurant9', locX: 90, locY: -100, avgPrice: 95 },
+	{ name: 'Restaurant7', locX: 10, locY: 10, avgPrice: 75 },
+	{ name: 'Restaurant8', locX: 5, locY: 25, avgPrice: 105 },
+	{ name: 'Restaurant9', locX: 90, locY: 99, avgPrice: 95 },
 	{ name: 'Restaurant10', locX: 12, locY: 10, avgPrice: 100 },
 ]
 
 let xa = lbl(76, 'alice')
-let ya = lbl(-10, 'alice')
-let xb = lbl(222, 'bob')
+let ya = lbl(10, 'alice')
+let xb = lbl(22, 'bob')
 let yb = lbl(13, 'bob')
 const avg = 0
-let xc = lbl(100, 'charlie')
-let yc = lbl(100, 'charlie')
+let xc = lbl(0, 'charlie')
+let yc = lbl(0, 'charlie')
 
 function getDist(x1, y1, x2, y2) {
 	return Math.sqrt(Math.pow((x1-x2), 2) + Math.pow((y1-y2), 2))
@@ -64,9 +64,54 @@ function guessRestaurant(dist) {
 	return closestRestaurant
 }
 
+
+// Choose restaurant for Alice and Bob with average price of better than some threshold (Task 1 and 2)
 lprint(chooseRestaurant())
+
+// Return distance between Alice and Charlie, find restaurant where Alice and Bob have dinner (Task 3)
 let dist = distanceAliceCharlie()
 lprint(guessRestaurant(dist))
 
+
+
+// Task 4
+// Create wallets for Alice and Bob, pay for the dinner
+
+// wallets of A and B
+let walletA = lbl(100, 'alice');
+let walletB = lbl(10, 'bob');
+
+function pay(wallet, price) {
+	let message = wallet; // get the security value of the wallet
+
+	if(wallet >= price) {
+		wallet =- price;
+		message = "Payment Done";
+	} else {
+		message = "Error Message";
+	}
+	return message;
+}
+
+// pay 50 for dinner (bob cannot afford!)
+lprint(pay(walletA, 50));
+lprint(pay(walletB, 50));
+
+
+
+// Task 5
+// Charlie performs a trilateration attack 
+
+function trilaterate() {
+	let x = lbl(( dist*dist - dist1*dist1 + xc*xc ) / (2*xc), 'charlie');
+	let y = lbl(Math.sqrt(Math.abs(dist*dist - x*x)), 'charlie');
+	let coords = lbl([x,y], 'charlie');
+	return coords;
+}
+
+// update Charlie's x-coordinate randomly, get distance to Alice and estimate Alice's coordinates
+xc = lbl(Math.floor((Math.random() * 100)), 'charlie');
+let dist1 = distanceAliceCharlie();
+lprint(trilaterate());
 
 
