@@ -78,24 +78,25 @@ lprint(guessRestaurant(dist))
 // Create wallets for Alice and Bob, pay for the dinner
 
 // wallets of A and B
-let walletA = lbl(100, 'alice');
-let walletB = lbl(10, 'bob');
+let walletA = lbl(100, 'alice', 'restaurant');
+let walletB = lbl(10, 'bob', 'restaurant');
 
 function pay(wallet, price) {
-	let message = wallet; // get the security value of the wallet
 
-	if(wallet >= price) {
+	let message; // get security context of price
+
+	if(declassify(wallet >= price)) {
 		wallet =- price;
 		message = "Payment Done";
 	} else {
 		message = "Error Message";
 	}
-	return message;
+	return message + lbl('', 'restaurant');
 }
 
 // pay 50 for dinner (bob cannot afford!)
-lprint(pay(walletA, 50));
-lprint(pay(walletB, 50));
+lprint(pay(walletA, lbl(50,'restaurant')));
+lprint(pay(walletB, lbl(50,'restaurant')));
 
 
 
@@ -103,9 +104,9 @@ lprint(pay(walletB, 50));
 // Charlie performs a trilateration attack 
 
 function trilaterate() {
-	let x = lbl(( dist*dist - dist1*dist1 + xc*xc ) / (2*xc), 'charlie');
-	let y = lbl(Math.sqrt(Math.abs(dist*dist - x*x)), 'charlie');
-	let coords = lbl([x,y], 'charlie');
+	let x = ( dist*dist - dist1*dist1 + xc*xc ) / (2*xc);
+	let y = Math.sqrt(Math.abs(dist*dist - x*x));
+	let coords = lbl([x,y],'charlie');
 	return coords;
 }
 
